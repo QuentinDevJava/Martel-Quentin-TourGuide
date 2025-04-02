@@ -1,5 +1,6 @@
 package com.openclassrooms.tourguide.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -24,6 +25,7 @@ public class RewardsService {
 	private int attractionProximityRange = 200;
 	private final GpsUtil gpsUtil;
 	private final RewardCentral rewardsCentral;
+	private long limit = 5;
 
 	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral) {
 		this.gpsUtil = gpsUtil;
@@ -77,6 +79,12 @@ public class RewardsService {
 		double nauticalMiles = 60 * Math.toDegrees(angle);
 		double statuteMiles = STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;
 		return statuteMiles;
+	}
+
+	public List<Attraction> addFiveNearestAttraction(Location location, List<Attraction> attractions) {
+
+		return attractions.stream().sorted(Comparator.comparingDouble(attraction -> getDistance(location, attraction)))
+				.limit(limit).toList();
 	}
 
 }
