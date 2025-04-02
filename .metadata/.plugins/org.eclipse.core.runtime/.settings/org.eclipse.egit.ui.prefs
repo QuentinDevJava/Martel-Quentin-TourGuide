@@ -1,0 +1,4 @@
+commit_dialog_history_messages=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<messages>\r\n<message>Update controller delete to deleteById</message>\r\n<message>Add and update javadoc for security configuration</message>\r\n<message>Add javadoc for SecurityConfig and use 403.html for exception handling.</message>\r\n<message>add unit tests</message>\r\n<message>Add RuleName controller and service  and update</message>\r\n<message>Add rating controller and service&\#x0A;Add devtools</message>\r\n<message>Update login and user controllers</message>\r\n<message>Add curve controller and service</message>\r\n<message>Add SecurityConfig and bidList controller and service</message>\r\n</messages>
+eclipse.preferences.version=1
+resourcehistory_graph_split=500,500
+resourcehistory_rev_split=700,300

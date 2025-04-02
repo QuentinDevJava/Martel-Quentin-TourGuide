@@ -1,0 +1,25 @@
+package com.openclassrooms.tourguide;
+
+import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+public class TestConcurrenceMultipleThreads {
+
+	StopWatch stopWatch = new StopWatch();
+
+	@BeforeEach
+	public void beforeEachTest() {
+		stopWatch.reset();
+		stopWatch.start();
+	}
+
+	@AfterEach
+	public void afterEachTest() {
+
+		stopWatch.stop();
+	}
+
+}
