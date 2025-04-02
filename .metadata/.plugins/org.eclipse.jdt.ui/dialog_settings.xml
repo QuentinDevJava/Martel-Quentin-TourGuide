@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<item key="org.eclipse.jdt.ui.lastextjar" value="C:\Users\martel\Desktop\1-dev java\P8\P8-App\TourGuide\libs"/>
 	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
 		<item key="group_libraries" value="true"/>
 		<item key="layout" value="1"/>
@@ -26,5 +27,8 @@
 	<section name="NewClassWizardPage">
 		<item key="create_constructor" value="false"/>
 		<item key="create_unimplemented" value="true"/>
+	</section>
+	<section name="BuildPathsPropertyPage">
+		<item key="pageIndex" value="3"/>
 	</section>
 </section>
