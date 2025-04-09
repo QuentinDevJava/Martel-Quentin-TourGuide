@@ -1,11 +1,14 @@
 package com.openclassrooms.tourguide.service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.openclassrooms.tourguide.dto.NearByAttractionDto;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
 
@@ -40,26 +43,34 @@ public class RewardsService {
 		proximityBuffer = defaultProximityBuffer;
 	}
 
-	public void calculateRewards(User user) {
+	public CompletableFuture<Void> calculateRewards(User user) {
+		
 		List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
 		List<Attraction> attractions = gpsUtil.getAttractions();
+		userLocations.stream()
+			.map(visitedLocation -> attractions.stream().filter(attraction -> isNearAttraction(visitedLocation, attraction)))
+			.map(attraction -> CompletableFuture.runAsync(() -> {}));
+		
 
 		for (VisitedLocation visitedLocation : userLocations) {
 			for (Attraction attraction : attractions) {
+				
 				if (user.getUserRewards().stream()
 						.filter(r -> r.attraction.attractionName.equals(attraction.attractionName)).count() == 0
-						&& nearAttraction(visitedLocation, attraction)) {
+						&& isNearAttraction(visitedLocation, attraction)) 
+				{
 					user.addUserReward(new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
 				}
-			}
-		}
+			
+			
+		
 	}
 
 	public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
 		return getDistance(attraction, location) > attractionProximityRange ? false : true;
 	}
 
-	private boolean nearAttraction(VisitedLocation visitedLocation, Attraction attraction) {
+	private boolean isNearAttraction(VisitedLocation visitedLocation, Attraction attraction) {
 		return getDistance(attraction, visitedLocation.location) > proximityBuffer ? false : true;
 	}
 
@@ -81,10 +92,34 @@ public class RewardsService {
 		return statuteMiles;
 	}
 
-	public List<Attraction> addFiveNearestAttraction(Location location, List<Attraction> attractions) {
+	public List<Attraction> find5NearestAttraction(Location location, List<Attraction> attractions) {
 
 		return attractions.stream().sorted(Comparator.comparingDouble(attraction -> getDistance(location, attraction)))
 				.limit(limit).toList();
 	}
 
+	public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
+			List<Attraction> attractions, User user) {
+		List<NearByAttractionDto> nearByAttractions = new ArrayList<>();
+
+		for (Attraction attraction : attractions) {
+			Location locationAttraction = new Location(attraction.latitude, attraction.longitude);
+			double distance = getDistance(locationAttraction, visitedLocation.location);
+			int rewardPoints = getRewardPoints(attraction, user);
+			// TODO refactor
+			NearByAttractionDto dto = new NearByAttractionDto(
+
+					attraction.attractionName,
+
+					"Lat : " + attraction.latitude + " Long : " + attraction.longitude,
+
+					"Lat : " + visitedLocation.location.latitude + " Long : " + visitedLocation.location.longitude,
+
+					distance,
+
+					rewardPoints);
+			nearByAttractions.add(dto);
+		}
+		return nearByAttractions;
+	}
 }

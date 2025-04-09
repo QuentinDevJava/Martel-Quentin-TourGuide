@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -86,15 +87,20 @@ public class TourGuideService {
 		return providers;
 	}
 
-	public VisitedLocation trackUserLocation(User user) {
+	public CompletableFuture<VisitedLocation> trackUserLocation(User user) {
+
 		VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());
+		CompletableFuture.supplyAsync(() -> gpsUtil.getUserLocation(user.getUserId()));
+
 		user.addToVisitedLocations(visitedLocation);
+
 		rewardsService.calculateRewards(user);
+
 		return visitedLocation;
 	}
 
 	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
-		return rewardsService.addFiveNearestAttraction(visitedLocation.location, gpsUtil.getAttractions());
+		return rewardsService.find5NearestAttraction(visitedLocation.location, gpsUtil.getAttractions());
 
 	}
 

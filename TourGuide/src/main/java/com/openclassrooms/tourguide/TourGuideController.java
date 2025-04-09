@@ -22,6 +22,7 @@ public class TourGuideController {
 
 	@Autowired
 	TourGuideService tourGuideService;
+
 	@Autowired
 	DTOService dtoService;
 
@@ -52,6 +53,7 @@ public class TourGuideController {
 
 		VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));
 		List<Attraction> attractions = tourGuideService.getNearByAttractions(visitedLocation);
+
 		User user = getUser(userName);
 
 		return dtoService.createDTO(visitedLocation, attractions, user);
