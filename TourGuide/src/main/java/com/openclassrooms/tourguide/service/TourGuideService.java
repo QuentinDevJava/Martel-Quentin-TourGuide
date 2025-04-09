@@ -60,7 +60,7 @@ public class TourGuideService {
 
 	public VisitedLocation getUserLocation(User user) {
 		VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0) ? user.getLastVisitedLocation()
-				: trackUserLocation(user);
+				: trackUserLocation(user).join();
 		return visitedLocation;
 	}
 
@@ -89,14 +89,12 @@ public class TourGuideService {
 
 	public CompletableFuture<VisitedLocation> trackUserLocation(User user) {
 
-		VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());
-		CompletableFuture.supplyAsync(() -> gpsUtil.getUserLocation(user.getUserId()));
-
-		user.addToVisitedLocations(visitedLocation);
-
-		rewardsService.calculateRewards(user);
-
-		return visitedLocation;
+		CompletableFuture<VisitedLocation> futureVisitedLocation = CompletableFuture
+				.supplyAsync(() -> gpsUtil.getUserLocation(user.getUserId()));
+		CompletableFuture<Void> futureAddToVisitedLocationAndReward = futureVisitedLocation
+				.thenAccept(user::addToVisitedLocations).thenRun(() -> rewardsService.calculateRewards(user).join());
+		futureAddToVisitedLocationAndReward.join();
+		return futureVisitedLocation;
 	}
 
 	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {

@@ -1,17 +1,26 @@
 package com.openclassrooms.tourguide.dto;
 
+import com.openclassrooms.tourguide.service.RewardsService;
+import com.openclassrooms.tourguide.user.User;
+
+import gpsUtil.location.Attraction;
+import gpsUtil.location.Location;
+import gpsUtil.location.VisitedLocation;
+
 public record NearByAttractionDto(String attractionName, String attractionLocation, String userLocation,
 		double distance, int rewardPoints) {
 
-}
-//public NearByAttractionDto() {
-//	TODO ajouter logique de creation du dto 
-//}
+	public NearByAttractionDto(Attraction attraction, VisitedLocation visitedLocation, User user,
+			RewardsService rewardsService) {
+		this(attraction.attractionName,
 
-//public NearAttractionDTO(Attraction attraction, VisitedLocation location, distance, rewardPoints) {
-//    this.attractionName = attraction.attractionName
-//    this.attractionLocation = String.format("Lat: %d Long: %d", attraction.latitude, attraction.longitude)
-//    this.userLocation = String.format("Lat: %d Long: %d", visitedLocation.latitude, visitedLocation.longitude)
-//    this.distance = distance
-//    this.rewardPoints = rewardPoints
-//}
+				"Lat : " + attraction.latitude + " Long : " + attraction.longitude,
+
+				"Lat : " + visitedLocation.location.latitude + " Long : " + visitedLocation.location.longitude,
+
+				rewardsService.getDistance(new Location(attraction.latitude, attraction.longitude),
+						visitedLocation.location),
+
+				rewardsService.getRewardPoints(attraction, user));
+	}
+}

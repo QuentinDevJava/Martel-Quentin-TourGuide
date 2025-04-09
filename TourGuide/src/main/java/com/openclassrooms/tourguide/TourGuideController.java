@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.openclassrooms.tourguide.dto.NearByAttractionDto;
-import com.openclassrooms.tourguide.service.DTOService;
+import com.openclassrooms.tourguide.service.RewardsService;
 import com.openclassrooms.tourguide.service.TourGuideService;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
@@ -24,7 +24,7 @@ public class TourGuideController {
 	TourGuideService tourGuideService;
 
 	@Autowired
-	DTOService dtoService;
+	RewardsService rewardsService;
 
 	@RequestMapping("/")
 	public String index() {
@@ -56,7 +56,7 @@ public class TourGuideController {
 
 		User user = getUser(userName);
 
-		return dtoService.createDTO(visitedLocation, attractions, user);
+		return rewardsService.buildNearByAttractionDTO(visitedLocation, attractions, user);
 
 	}
 

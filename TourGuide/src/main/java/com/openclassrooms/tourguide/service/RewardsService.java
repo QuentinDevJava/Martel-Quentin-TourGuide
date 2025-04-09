@@ -1,6 +1,5 @@
 package com.openclassrooms.tourguide.service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -44,26 +43,16 @@ public class RewardsService {
 	}
 
 	public CompletableFuture<Void> calculateRewards(User user) {
-		
+
 		List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
 		List<Attraction> attractions = gpsUtil.getAttractions();
-		userLocations.stream()
-			.map(visitedLocation -> attractions.stream().filter(attraction -> isNearAttraction(visitedLocation, attraction)))
-			.map(attraction -> CompletableFuture.runAsync(() -> {}));
-		
 
-		for (VisitedLocation visitedLocation : userLocations) {
-			for (Attraction attraction : attractions) {
-				
-				if (user.getUserRewards().stream()
-						.filter(r -> r.attraction.attractionName.equals(attraction.attractionName)).count() == 0
-						&& isNearAttraction(visitedLocation, attraction)) 
-				{
-					user.addUserReward(new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
-				}
-			
-			
-		
+		return CompletableFuture.runAsync(() -> userLocations.stream()
+				.forEach(visitedLocation -> attractions.stream()
+						.filter(attraction -> isNearAttraction(visitedLocation, attraction))
+						.forEach(attraction -> user.addUserReward(
+								new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user))))));
+
 	}
 
 	public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
@@ -100,26 +89,7 @@ public class RewardsService {
 
 	public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
 			List<Attraction> attractions, User user) {
-		List<NearByAttractionDto> nearByAttractions = new ArrayList<>();
-
-		for (Attraction attraction : attractions) {
-			Location locationAttraction = new Location(attraction.latitude, attraction.longitude);
-			double distance = getDistance(locationAttraction, visitedLocation.location);
-			int rewardPoints = getRewardPoints(attraction, user);
-			// TODO refactor
-			NearByAttractionDto dto = new NearByAttractionDto(
-
-					attraction.attractionName,
-
-					"Lat : " + attraction.latitude + " Long : " + attraction.longitude,
-
-					"Lat : " + visitedLocation.location.latitude + " Long : " + visitedLocation.location.longitude,
-
-					distance,
-
-					rewardPoints);
-			nearByAttractions.add(dto);
-		}
-		return nearByAttractions;
+		return attractions.stream().map(attraction -> new NearByAttractionDto(attraction, visitedLocation, user, this))
+				.toList();
 	}
 }
