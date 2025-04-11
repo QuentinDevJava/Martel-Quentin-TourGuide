@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,7 @@ public class RewardsService {
 	private final GpsUtil gpsUtil;
 	private final RewardCentral rewardsCentral;
 	private long limit = 5;
+	private final ExecutorService executorService = Executors.newFixedThreadPool(200);
 
 	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral) {
 		this.gpsUtil = gpsUtil;
@@ -43,15 +46,17 @@ public class RewardsService {
 	}
 
 	public CompletableFuture<Void> calculateRewards(User user) {
+		CompletableFuture<List<VisitedLocation>> futureUserLocations = CompletableFuture
+				.supplyAsync(() -> new CopyOnWriteArrayList<>(user.getVisitedLocations()), executorService);
+		CompletableFuture<List<Attraction>> futureAttractions = CompletableFuture.supplyAsync(gpsUtil::getAttractions,
+				executorService);
 
-		List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
-		List<Attraction> attractions = gpsUtil.getAttractions();
-
-		return CompletableFuture.runAsync(() -> userLocations.stream()
-				.forEach(visitedLocation -> attractions.stream()
+		return CompletableFuture.runAsync(
+				() -> futureUserLocations.join().stream().forEach(visitedLocation -> futureAttractions.join().stream()
 						.filter(attraction -> isNearAttraction(visitedLocation, attraction))
 						.forEach(attraction -> user.addUserReward(
-								new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user))))));
+								new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user))))),
+				executorService);
 
 	}
 
