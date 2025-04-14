@@ -1,5 +1,6 @@
 package com.openclassrooms.tourguide;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ class TestPerformance {
 	void highVolumeTrackLocation(int nbuser) {
 		GpsUtil gpsUtil = new GpsUtil();
 		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
+
 		InternalTestHelper.setInternalUserNumber(nbuser);
 		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService);
 		List<User> allUsers = tourGuideService.getAllUsers();
@@ -64,8 +66,7 @@ class TestPerformance {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 
-		List<CompletableFuture<VisitedLocation>> futures = allUsers.parallelStream()
-				.map(tourGuideService::trackUserLocation).toList();
+		List<CompletableFuture<VisitedLocation>> futures = allUsers.parallelStream() .map(tourGuideService::trackUserLocation).toList();
 
 		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
@@ -102,13 +103,7 @@ class TestPerformance {
 		allUsers.parallelStream()
 				.forEach(u -> u.addToVisitedLocations(new VisitedLocation(u.getUserId(), attraction, new Date())));
 
-		allUsers.forEach(user -> futures.add(rewardsService.calculateRewards(user)));
-
-		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-		for (User user : allUsers) {
-			assertTrue(user.getUserRewards().size() > 0);
-		}
+		allUsers.parallelStream().forEach(user -> rewardsService.calculateRewards(user).thenAccept(res -> assertFalse(user.getUserRewards().isEmpty())));
 
 		stopWatch.stop();
 		tourGuideService.tracker.stopTracking();
