@@ -91,9 +91,16 @@ public class RewardsService {
 				.limit(limit).toList();
 	}
 
-	public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
-			List<Attraction> attractions, User user) {
-		return attractions.stream().map(attraction -> new NearByAttractionDto(attraction, visitedLocation, user, this))
-				.toList();
-	}
+    public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
+                                                              List<Attraction> attractions, User user) {
+
+        return attractions.stream()
+                .map(attraction -> {
+                    double distance = getDistance(new Location(attraction.latitude, attraction.longitude), visitedLocation.location);
+                    int rewardPoints = getRewardPoints(attraction, user);
+                    return new NearByAttractionDto(attraction, visitedLocation, distance, rewardPoints);
+
+                })
+                .toList();
+    }
 }
