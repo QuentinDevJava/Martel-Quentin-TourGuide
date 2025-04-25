@@ -41,7 +41,9 @@ public class ExcelWriter {
 			if (sheet == null)
 				return;
 
-			cleanSheet(sheet);
+			if (nbUsers == 100) {
+				cleanSheet(sheet);
+			}
 
 			appendPerformanceResult(sheet, sheetName, nbUsers, durationSeconds);
 
