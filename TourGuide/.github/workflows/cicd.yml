@@ -1,0 +1,17 @@
+name: tourguide
+
+on:
+  push:
+	branches: ["step4"]
+	
+jobs:
+  build:
+    runs-on: ubuntu-latest
+	steps:
+		- name: checkout
+		  uses: actions/checkout@v4
+	    - name: install jdk
+	      uses: actions/setup-java@v4
+		  with:
+		    distribution: 'temurin' 
+		    java-version: '21'
