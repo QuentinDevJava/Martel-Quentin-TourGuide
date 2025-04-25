@@ -18,12 +18,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Verify Maven and Java
+      - name: Verify Java & Maven
         run: |
-          mvn -v
           java -version
-      - name: Build and test
-        run: |
-          cd step4
-          mvn clean install -B
-          mvn test
+          mvn -v
+
+      - name: Build with Maven
+        run: mvn -f TourGuide/pom.xml clean install -B
+
+      - name: Run tests
+        run: mvn -f TourGuide/pom.xml test
