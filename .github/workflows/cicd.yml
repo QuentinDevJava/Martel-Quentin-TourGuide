@@ -2,7 +2,7 @@ name: tourguide
 
 on:
   push:
-	branches: [step4]
+	branches: [ "step4" ]
 	
 jobs:
   build:
