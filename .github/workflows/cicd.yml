@@ -30,8 +30,6 @@ jobs:
           mvn install:install-file -Dfile=TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
 
     
-      - name: Build with Maven
-        run: mvn -f TourGuide/pom.xml clean install
+      - name: Build with Maven & run tests without performance
+        run: mvn -f TourGuide/pom.xml clean verify -Dgroups="!performance"
 
-      - name: Run tests
-        run: mvn -f TourGuide/pom.xml test

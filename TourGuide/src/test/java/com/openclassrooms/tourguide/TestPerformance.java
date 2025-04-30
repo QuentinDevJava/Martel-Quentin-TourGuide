@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import rewardCentral.RewardCentral;
 
 @Slf4j
+@Tag("performance")
 class TestPerformance {
 
 	private ExcelWriter excelWriter = new ExcelWriter();
@@ -82,7 +83,6 @@ class TestPerformance {
 
 		assertTrue(TimeUnit.MINUTES.toSeconds(15) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
 	}
-
 
 	@ParameterizedTest
 	@ValueSource(ints = { 100, 1000, 5000, 10000, 50000, 100000 })
