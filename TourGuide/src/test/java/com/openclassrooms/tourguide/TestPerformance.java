@@ -52,7 +52,7 @@ class TestPerformance {
 	 * assertTrue(TimeUnit.MINUTES.toSeconds(20) >=
 	 * TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
 	 */
-	@Disabled
+
 	@ParameterizedTest
 	@ValueSource(ints = { 100, 1000, 5000, 10000, 50000, 100000 })
 	void highVolumeTrackLocation(int nbuser) {
@@ -83,7 +83,7 @@ class TestPerformance {
 		assertTrue(TimeUnit.MINUTES.toSeconds(15) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
 	}
 
-	@Disabled
+
 	@ParameterizedTest
 	@ValueSource(ints = { 100, 1000, 5000, 10000, 50000, 100000 })
 	void highVolumeGetRewards(int nbuser) {

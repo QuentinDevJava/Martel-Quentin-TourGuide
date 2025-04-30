@@ -50,7 +50,6 @@ class TestRewardsService {
 		assertTrue(rewardsService.isWithinAttractionProximity(attraction, attraction));
 	}
 
-	@Disabled
 	@Test
 	void nearAllAttractions() {
 		GpsUtil gpsUtil = new GpsUtil();

@@ -108,7 +108,7 @@ class TestTourGuideService {
 
 		assertEquals(5, attractions.size());
 	}
-
+	@Test
 	void getTripDeals() {
 		GpsUtil gpsUtil = new GpsUtil();
 		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());

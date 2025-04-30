@@ -2,7 +2,7 @@ name: TourGuide
 
 on:
   push:
-    branches: [ "step4" ]
+    branches: [ "dev" ]
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
 
     
       - name: Build with Maven
-        run: mvn -f TourGuide/pom.xml clean install -B
+        run: mvn -f TourGuide/pom.xml clean install
 
       - name: Run tests
         run: mvn -f TourGuide/pom.xml test
