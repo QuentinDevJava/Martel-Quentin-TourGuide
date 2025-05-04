@@ -33,3 +33,8 @@ jobs:
       - name: Build with Maven & run tests without performance
         run: mvn -f TourGuide/pom.xml clean verify -Dgroups="!performance"
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TourGuide-jar
+          path: TourGuide/target/*.jar
