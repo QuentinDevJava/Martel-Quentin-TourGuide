@@ -1,0 +1,40 @@
+name: TourGuide
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with: 
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Verify Java & Maven
+        run: |
+          java -version
+          mvn -v
+
+      - name: Install local dependencies (gpsUtil, tripPricer, rewardCentral)
+        run: |
+          mvn install:install-file -Dfile=TourGuide/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=TourGuide/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
+
+    
+      - name: Build with Maven & run tests without performance
+        run: mvn -f TourGuide/pom.xml clean verify -Dgroups="!performance"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TourGuide-jar
+          path: TourGuide/target/*.jar
