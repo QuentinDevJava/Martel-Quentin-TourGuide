@@ -49,6 +49,17 @@ public class TourGuideController {
 	// The reward points for visiting each Attraction.
 	// Note: Attraction reward points can be gathered from RewardsCentral
 
+	/**
+	 * Retrieves a list of attractions near the specified user.
+	 * <p>
+	 * Each attraction is represented as a {@link NearByAttractionDto}, including
+	 * its name, location, the user’s current location, the distance between them,
+	 * and the reward points.
+	 *
+	 * @param userName the username of the user
+	 * @return a list of {@link NearByAttractionDto} objects representing nearby
+	 *         attractions
+	 */
 	@GetMapping("/getNearbyAttractions")
 	public List<NearByAttractionDto> getNearbyAttractions(@RequestParam String userName) {
 		VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));

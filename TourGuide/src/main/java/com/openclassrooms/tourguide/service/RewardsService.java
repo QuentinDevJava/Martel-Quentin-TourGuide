@@ -19,6 +19,10 @@ import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
 import rewardCentral.RewardCentral;
 
+/**
+ * Service responsible for calculating and assigning rewards to users based on
+ * their proximity to attractions and visited locations.
+ */
 @Service
 public class RewardsService {
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
@@ -45,6 +49,14 @@ public class RewardsService {
 		proximityBuffer = defaultProximityBuffer;
 	}
 
+	/**
+	 * Asynchronously calculates and assigns rewards for a given user based on their
+	 * visited locations.
+	 *
+	 * @param user the user for whom rewards should be calculated
+	 * @return a {@link CompletableFuture} that completes when reward calculation is
+	 *         done
+	 */
 	public CompletableFuture<Void> calculateRewards(User user) {
 		CompletableFuture<List<VisitedLocation>> futureUserLocations = CompletableFuture
 				.supplyAsync(() -> new CopyOnWriteArrayList<>(user.getVisitedLocations()), executorService);
@@ -60,6 +72,14 @@ public class RewardsService {
 
 	}
 
+	/**
+	 * Checks if a location is within the defined proximity range of an attraction.
+	 *
+	 * @param attraction the attraction
+	 * @param location   the location
+	 * @return true if the location is within the attraction proximity range, false
+	 *         otherwise
+	 */
 	public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
 		return getDistance(attraction, location) < attractionProximityRange;
 	}
@@ -68,10 +88,26 @@ public class RewardsService {
 		return getDistance(attraction, visitedLocation.location) < proximityBuffer;
 	}
 
+	/**
+	 * Retrieves the reward points associated with a given attraction for a specific
+	 * user.
+	 *
+	 * @param attraction the attraction
+	 * @param user       the user
+	 * @return the number of reward points
+	 */
 	public int getRewardPoints(Attraction attraction, User user) {
 		return rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId());
 	}
 
+	/**
+	 * Calculates the distance in statute miles between two geographic locations
+	 * using the Haversine formula.
+	 *
+	 * @param loc1 the first location
+	 * @param loc2 the second location
+	 * @return the distance in statute miles
+	 */
 	public double getDistance(Location loc1, Location loc2) {
 		double lat1 = Math.toRadians(loc1.latitude);
 		double lon1 = Math.toRadians(loc1.longitude);
@@ -85,22 +121,39 @@ public class RewardsService {
 		return STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;
 	}
 
+	/**
+	 * Finds the 5 closest attractions to a given location from a list of
+	 * attractions.
+	 *
+	 * @param location    the location
+	 * @param attractions the list of all attractions
+	 * @return a list of the 5 nearest attractions
+	 */
 	public List<Attraction> find5NearestAttraction(Location location, List<Attraction> attractions) {
 
 		return attractions.stream().sorted(Comparator.comparingDouble(attraction -> getDistance(location, attraction)))
 				.limit(limit).toList();
 	}
 
-    public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
-                                                              List<Attraction> attractions, User user) {
+	/**
+	 * Builds a list of {@link NearByAttractionDto} objects representing the user's
+	 * distance and rewards for each given attraction.
+	 *
+	 * @param visitedLocation the user's current location
+	 * @param attractions     the list of attractions
+	 * @param user            the user
+	 * @return a list of {@link NearByAttractionDto} containing attraction data,
+	 *         distance, and rewards
+	 */
+	public List<NearByAttractionDto> buildNearByAttractionDTO(VisitedLocation visitedLocation,
+			List<Attraction> attractions, User user) {
 
-        return attractions.stream()
-                .map(attraction -> {
-                    double distance = getDistance(new Location(attraction.latitude, attraction.longitude), visitedLocation.location);
-                    int rewardPoints = getRewardPoints(attraction, user);
-                    return new NearByAttractionDto(attraction, visitedLocation, distance, rewardPoints);
+		return attractions.stream().map(attraction -> {
+			double distance = getDistance(new Location(attraction.latitude, attraction.longitude),
+					visitedLocation.location);
+			int rewardPoints = getRewardPoints(attraction, user);
+			return new NearByAttractionDto(attraction, visitedLocation, distance, rewardPoints);
 
-                })
-                .toList();
-    }
+		}).toList();
+	}
 }

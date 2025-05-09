@@ -11,6 +11,13 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility class to write performance test results into an existing Excel file.
+ * <p>
+ * The results are written into predefined sheets ("Locations" or "Rewards")
+ * inside the file {@code TourGuide_Performance_Graphs.xlsx}, depending on the
+ * test name.
+ */
 @Slf4j
 public class ExcelWriter {
 
@@ -22,6 +29,14 @@ public class ExcelWriter {
 	private static final String LOCATION_SHEET = "Locations";
 	private static final String REWARD_SHEET = "Rewards";
 
+	/**
+	 * Writes a performance test result to the appropriate sheet in the Excel file.
+	 *
+	 * @param testName        the name of the test (e.g., "highVolumeTrackLocation"
+	 *                        or "highVolumeGetRewards")
+	 * @param nbUsers         the number of users used in the test
+	 * @param durationSeconds the execution time of the test in seconds
+	 */
 	public void writePerformanceResult(String testName, int nbUsers, long durationSeconds) {
 
 		String sheetName = testName.equalsIgnoreCase("highVolumeTrackLocation") ? LOCATION_SHEET : REWARD_SHEET;

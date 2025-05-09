@@ -30,6 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 import tripPricer.Provider;
 import tripPricer.TripPricer;
 
+/**
+ * Service responsible for managing user locations, calculating rewards, and
+ * retrieving travel deals based on user preferences and proximity to
+ * attractions.
+ */
 @Slf4j
 @Service
 public class TourGuideService {
@@ -88,6 +93,14 @@ public class TourGuideService {
 		return providers;
 	}
 
+	/**
+	 * Asynchronously tracks the user's location and calculates rewards based on
+	 * their new position.
+	 * <p>
+	 * 
+	 * @param user the user whose location is to be tracked
+	 * @return a {@link CompletableFuture} containing the {@link VisitedLocation}
+	 */
 	public CompletableFuture<VisitedLocation> trackUserLocation(User user) {
 
 		CompletableFuture<VisitedLocation> futureVisitedLocation = CompletableFuture
@@ -104,6 +117,12 @@ public class TourGuideService {
 
 	}
 
+	/**
+	 * Retrieves the 5 closest attractions to the user's current visited location.
+	 *
+	 * @param visitedLocation the user's most recent visited location
+	 * @return a list of the 5 nearest {@link Attraction} objects
+	 */
 	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
 		return rewardsService.find5NearestAttraction(visitedLocation.location, gpsUtil.getAttractions());
 
